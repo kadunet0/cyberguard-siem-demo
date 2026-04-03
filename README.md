@@ -2,6 +2,12 @@
 
 Interface de demonstração de um painel **SIEM + SOAR** com dados fictícios. É um front-end em **React** só para explorar o layout e interagir localmente — **não** monitoriza redes reais nem grava dados no servidor.
 
+## Site publicado (GitHub Pages)
+
+**https://kadunet0.github.io/cyberguard-siem-demo/**
+
+O deploy corre automaticamente em cada push para `main` (GitHub Actions). Na primeira vez, em **Settings → Pages**, a origem deve estar como **GitHub Actions** (costuma ficar definida após o primeiro workflow com sucesso).
+
 ## Requisitos
 
 - [Node.js](https://nodejs.org/) (LTS recomendado, v18+)
