@@ -117,9 +117,11 @@ const CSS = `
     --glow-red: 0 0 20px rgba(255,0,85,.5);
   }
 
-  body { background: var(--bg0); color: var(--text); font-family: var(--font-ui); overflow: hidden; }
+  html { -webkit-text-size-adjust: 100%; }
 
-  .app { display: flex; flex-direction: column; height: 100vh; background: var(--bg0); }
+  body { background: var(--bg0); color: var(--text); font-family: var(--font-ui); overflow: hidden; touch-action: manipulation; }
+
+  .app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; background: var(--bg0); }
 
   /* Scanline overlay */
   .app::before {
@@ -141,6 +143,40 @@ const CSS = `
     content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
     background: linear-gradient(90deg, transparent, var(--cyan), transparent);
     opacity: .4;
+  }
+
+  .header-menu-btn {
+    display: none;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    margin: 0 6px 0 0;
+    padding: 0;
+    border: 1px solid var(--border);
+    background: var(--bg3);
+    color: var(--cyan);
+    font-size: 22px;
+    line-height: 1;
+    border-radius: 3px;
+    cursor: pointer;
+    font-family: var(--font-ui);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .header-menu-btn:active { background: rgba(0,204,255,.12); }
+
+  .nav-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    background: rgba(0,0,0,.5);
+    -webkit-tap-highlight-color: transparent;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
   }
 
   .logo { display: flex; align-items: center; gap: 10px; }
@@ -343,6 +379,14 @@ const CSS = `
   .tbl td { padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,.04); vertical-align: middle; }
   .tbl tr:hover td { background: rgba(0,204,255,.03); }
   .tbl tr:last-child td { border-bottom: none; }
+
+  .table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+  .table-wrap .tbl { min-width: 560px; }
 
   /* ── SEVERITY BADGE ── */
   .sev-badge {
@@ -572,6 +616,194 @@ const CSS = `
   .fade-up { animation: fadeUp .3s ease forwards; }
 
   @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+
+  /* ── MOBILE & TABLETS (touch-first) ── */
+  @media (max-width: 900px) {
+    body { overflow: auto; overflow-x: hidden; }
+    .app { min-height: 100dvh; height: auto; max-height: none; }
+
+    html:has(.app.nav-open),
+    body:has(.app.nav-open) {
+      overflow: hidden;
+      height: 100%;
+    }
+
+    .header {
+      flex-wrap: wrap;
+      height: auto;
+      min-height: 52px;
+      padding: 8px 10px;
+      padding-left: max(10px, env(safe-area-inset-left));
+      padding-right: max(10px, env(safe-area-inset-right));
+      gap: 8px;
+      position: sticky;
+      top: 0;
+      z-index: 10001;
+      background: linear-gradient(180deg, #0b0f1a 0%, #080b14 100%);
+    }
+    .header-menu-btn { display: flex; }
+    .header-sep { display: none; }
+    .clock { display: none; }
+    .logo-sub { display: none; }
+    .logo-text { font-size: 15px; letter-spacing: 1px; }
+
+    .status-pills {
+      order: 10;
+      flex: 1 1 100%;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      gap: 6px;
+      padding-bottom: 4px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      mask-image: linear-gradient(90deg, #000 92%, transparent 100%);
+    }
+    .pill {
+      flex-shrink: 0;
+      font-size: 10px;
+      padding: 8px 10px;
+      white-space: nowrap;
+    }
+
+    .user-badge {
+      margin-left: auto;
+      padding: 6px 10px;
+      min-height: 44px;
+      align-items: center;
+    }
+    .user-badge > div:last-child { display: none; }
+
+    .layout {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: visible;
+      position: relative;
+    }
+
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: min(300px, 88vw);
+      max-width: 100%;
+      z-index: 9999;
+      transform: translateX(-100%);
+      transition: transform 0.22s ease;
+      border-right: 1px solid var(--border);
+      padding-top: max(8px, env(safe-area-inset-top));
+      padding-bottom: env(safe-area-inset-bottom);
+      box-shadow: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .app.nav-open .sidebar {
+      transform: translateX(0);
+      box-shadow: 6px 0 28px rgba(0,0,0,.45);
+    }
+    .app.nav-open .nav-backdrop {
+      display: block;
+      animation: fadeInBackdrop 0.2s ease forwards;
+    }
+    @keyframes fadeInBackdrop { from { opacity: 0; } to { opacity: 1; } }
+
+    .nav-item {
+      min-height: 48px;
+      padding: 12px 12px;
+      -webkit-tap-highlight-color: rgba(0,204,255,.12);
+      font-size: 14px;
+    }
+    .nav-section { padding-top: 16px; }
+    .sidebar-footer { padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+
+    .main {
+      flex: 1 1 auto;
+      min-width: 0;
+      min-height: 60vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .content { padding: 12px max(12px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); }
+
+    .page-header { flex-direction: column; align-items: stretch; gap: 12px; }
+    .page-title { font-size: 18px; }
+    .page-sub { font-size: 10px; line-height: 1.4; }
+    .page-actions { flex-wrap: wrap; width: 100%; gap: 8px; }
+
+    .btn {
+      min-height: 44px;
+      padding: 10px 16px;
+      font-size: 13px;
+    }
+
+    .metric-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .metric-value { font-size: 26px !important; }
+    .metric-card { padding: 12px; }
+
+    .grid-2, .grid-3, .grid-6535, .grid-4060 { grid-template-columns: 1fr; }
+
+    .filter-bar { gap: 6px; }
+    .filter-chip {
+      min-height: 40px;
+      padding: 8px 12px;
+      font-size: 12px;
+    }
+
+    .world-map { height: min(260px, 45vh); min-height: 200px; }
+    .map-point {
+      min-width: 44px;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .playbook-footer {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+    }
+    .playbook-footer .btn { width: 100%; justify-content: center; }
+
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 10px 10px;
+      font-size: 12px;
+    }
+    .tab-bar { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+    .recharts-responsive-container { min-width: 0 !important; }
+    .recharts-wrapper { max-width: 100%; }
+
+    .iam-metrics-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
+    .vuln-scan-grid { grid-template-columns: 1fr !important; }
+
+    .arch-container { padding: 12px; }
+    .arch-node { font-size: 10px; padding: 10px 12px; }
+
+    .terminal { font-size: 11px; max-height: min(220px, 35vh); }
+
+    .table-wrap .tbl.alerts-wide { min-width: 720px; }
+
+    .alerts-toolbar {
+      flex-direction: column !important;
+      align-items: stretch !important;
+    }
+    .alerts-toolbar .filter-bar {
+      width: 100%;
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      padding-bottom: 4px;
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .metric-grid { grid-template-columns: 1fr; }
+    .iam-metrics-grid { grid-template-columns: 1fr !important; }
+    .page-title { font-size: 16px; }
+  }
 `;
 
 // ─── HELPER COMPONENTS ────────────────────────────────────────────────────────
@@ -761,6 +993,7 @@ const DashboardView = ({ alerts }) => {
           <span>ALERTAS RECENTES</span>
           <LiveTag />
         </div>
+        <div className="table-wrap">
         <table className="tbl">
           <thead>
             <tr>
@@ -782,6 +1015,7 @@ const DashboardView = ({ alerts }) => {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );
@@ -858,6 +1092,7 @@ const AttackMapView = () => {
       <div className="grid-2">
         <div className="card">
           <div className="card-title">TOP ORIGENS DE ATAQUE</div>
+          <div className="table-wrap">
           <table className="tbl">
             <thead><tr><th>PAÍS</th><th>IP</th><th>ATAQUES</th><th>RISCO</th></tr></thead>
             <tbody>
@@ -875,6 +1110,7 @@ const AttackMapView = () => {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
         {selected ? (
           <div className="card" style={{ border:"1px solid rgba(255,0,85,.3)" }}>
@@ -942,7 +1178,7 @@ const AlertsView = ({ alerts, setAlerts, onOpenSimulador }) => {
         ))}
       </div>
 
-      <div style={{ display:"flex", gap:8, marginBottom:12, alignItems:"center" }}>
+      <div className="alerts-toolbar" style={{ display:"flex", gap:8, marginBottom:12, alignItems:"center" }}>
         <input className="search-input" placeholder="🔍 Buscar por mensagem, IP..." value={search} onChange={e => setSearch(e.target.value)} style={{ flex:1 }} />
         <div className="filter-bar" style={{ margin:0 }}>
           {["ALL","CRITICAL","HIGH","MEDIUM","LOW"].map(f => (
@@ -952,7 +1188,8 @@ const AlertsView = ({ alerts, setAlerts, onOpenSimulador }) => {
       </div>
 
       <div className="card" style={{ padding:0 }}>
-        <table className="tbl">
+        <div className="table-wrap">
+        <table className="tbl alerts-wide">
           <thead>
             <tr>
               <th>ID</th><th>MENSAGEM</th><th>SEVERIDADE</th><th>ORIGEM</th>
@@ -980,6 +1217,7 @@ const AlertsView = ({ alerts, setAlerts, onOpenSimulador }) => {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );
@@ -1136,6 +1374,7 @@ const VulnView = () => {
 
       {tab === "vulns" && (
         <div className="card" style={{ padding:0 }}>
+          <div className="table-wrap">
           <table className="tbl">
             <thead>
               <tr><th>CVE ID</th><th>HOST</th><th>SERVIÇO</th><th>CVSS</th><th>SEVERIDADE</th><th>DESCRIÇÃO</th><th>STATUS</th><th>AÇÕES</th></tr>
@@ -1157,6 +1396,7 @@ const VulnView = () => {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 
@@ -1167,7 +1407,7 @@ const VulnView = () => {
               <div style={{ fontFamily:"var(--font-display)", fontSize:16, fontWeight:700, color:"var(--text-bright)", marginBottom:8 }}>
                 Scanner de Vulnerabilidades Interno
               </div>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10, marginBottom:12 }}>
+              <div className="vuln-scan-grid" style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10, marginBottom:12 }}>
                 {[
                   { label:"Último Scan", val:"2025-04-03 12:00" },
                   { label:"Hosts Verificados", val:"247" },
@@ -1217,7 +1457,7 @@ const IamView = () => (
       </div>
     </div>
 
-    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr", gap:10, marginBottom:14 }}>
+    <div className="iam-metrics-grid" style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr", gap:10, marginBottom:14 }}>
       {[
         { label:"TOTAL USUÁRIOS", val:6, color:"#00ccff" },
         { label:"COM MFA ATIVO", val:5, color:"#00ff9d" },
@@ -1234,6 +1474,7 @@ const IamView = () => (
     <div className="grid-6535">
       <div className="card" style={{ padding:0 }}>
         <div style={{ padding:"10px 14px 6px" }} className="card-title">USUÁRIOS & PAPÉIS</div>
+        <div className="table-wrap">
         <table className="tbl">
           <thead><tr><th>NOME</th><th>PAPEL</th><th>DEPT</th><th>ÚLTIMO LOGIN</th><th>MFA</th><th>STATUS</th><th>AÇÕES</th></tr></thead>
           <tbody>
@@ -1254,6 +1495,7 @@ const IamView = () => (
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       <div>
@@ -1704,6 +1946,15 @@ export default function App() {
   const [alerts, setAlerts] = useState(INITIAL_ALERTS);
   const [sysStats, setSysStats] = useState({ cpu: 67, mem: 54, disk: 38 });
   const [scanlineOn, setScanlineOn] = useState(true);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") setMobileNavOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   const criticalCount = alerts.filter(a => a.sev === SEVERITY.CRITICAL && a.status === "OPEN").length;
   const openCount = alerts.filter(a => a.status === "OPEN").length;
@@ -1721,9 +1972,18 @@ export default function App() {
   return (
     <>
       <style>{CSS}</style>
-      <div className={`app${scanlineOn ? "" : " scanline-off"}`}>
+      <div className={`app${scanlineOn ? "" : " scanline-off"}${mobileNavOpen ? " nav-open" : ""}`}>
         {/* HEADER */}
         <header className="header">
+          <button
+            type="button"
+            className="header-menu-btn"
+            aria-label={mobileNavOpen ? "Fechar menu" : "Abrir menu de navegação"}
+            aria-expanded={mobileNavOpen}
+            onClick={() => setMobileNavOpen((o) => !o)}
+          >
+            {mobileNavOpen ? "✕" : "☰"}
+          </button>
           <div className="logo">
             <div className="logo-icon">CG</div>
             <div>
@@ -1749,6 +2009,14 @@ export default function App() {
           </div>
         </header>
 
+        <button
+          type="button"
+          className="nav-backdrop"
+          tabIndex={-1}
+          aria-label="Fechar menu"
+          onClick={() => setMobileNavOpen(false)}
+        />
+
         <div className="layout">
           {/* SIDEBAR */}
           <aside className="sidebar">
@@ -1761,7 +2029,10 @@ export default function App() {
                     <div
                       key={n.id}
                       className={`nav-item ${view === n.id ? "active" : ""}`}
-                      onClick={() => setView(n.id)}
+                      onClick={() => {
+                        setView(n.id);
+                        setMobileNavOpen(false);
+                      }}
                     >
                       <span className="nav-icon">{n.icon}</span>
                       {n.label}
