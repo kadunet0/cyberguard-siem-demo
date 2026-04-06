@@ -7,7 +7,7 @@ Interface de demonstração de um painel **SIEM + SOAR** com dados fictícios. �
 ## Site publicado (GitHub Pages)
 
 - URL: [https://kadunet0.github.io/cyberguard-siem-demo/](https://kadunet0.github.io/cyberguard-siem-demo/)
-- O deploy corre automaticamente em cada push para `main` (GitHub Actions). Na primeira vez, em **Settings → Pages**, a origem deve estar como **GitHub Actions** (costuma ficar definida após o primeiro workflow com sucesso).
+
 
 ## Requisitos
 
